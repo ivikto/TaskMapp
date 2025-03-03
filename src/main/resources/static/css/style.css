@@ -8,8 +8,21 @@ body {
     background-color: #f0f0f0;
     max-width: 700px;
     margin: 0 auto;
+}
+
+.exitDiv {
+margin-left: 50px;
+}
+
+.my_btn {
+    border-radius: 5px;
+    border-color: #ff8f07;
+    background-color: #ff8f07;
+    margin-top: 10px;
+    font-size: 18px;
 
 }
+
 
 h1 {
     text-align: center;
@@ -20,5 +33,5 @@ h2 {
 }
 
 h3 {
-    text-align: center;
+    text-align: left;
 }

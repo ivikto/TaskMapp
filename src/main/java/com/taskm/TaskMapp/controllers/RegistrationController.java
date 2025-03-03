@@ -19,8 +19,8 @@ public class RegistrationController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestParam String username, @RequestParam String password) {
-        userService.registerUser(username, password);
+    public String registerUser(@RequestParam String username, @RequestParam String password, @RequestParam String email, @RequestParam String phone) {
+        userService.registerUser(username, password, email, phone);
         return "redirect:/login"; // Перенаправляет на страницу входа
     }
 

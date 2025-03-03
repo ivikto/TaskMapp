@@ -16,7 +16,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/register", "/login", "/css/**", "/img/**").permitAll() // Разрешаем доступ всем
+                        .requestMatchers( "/register", "/login", "/css/**", "/img/**","/scripts/**" ).permitAll() // Разрешаем доступ всем
                         .anyRequest().authenticated() // Все остальные запросы требуют аутентификации
                 )
                 .formLogin((form) -> form
@@ -25,6 +25,10 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout((logout) -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .invalidateHttpSession(true) // Очищает сессию
+                        .deleteCookies("JSESSIONID") // Удаляет куки
                         .permitAll() // Разрешаем выход всем
                 );
 
