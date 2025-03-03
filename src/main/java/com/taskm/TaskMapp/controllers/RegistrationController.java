@@ -23,4 +23,9 @@ public class RegistrationController {
         userService.registerUser(username, password);
         return "redirect:/login"; // Перенаправляет на страницу входа
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login"; // Возвращает страницу регистрации
+    }
 }
