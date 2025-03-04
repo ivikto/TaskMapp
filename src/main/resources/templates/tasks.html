@@ -13,7 +13,7 @@
 <body>
 <header th:insert="~{parts/header :: header}"></header>
 <div class="container mt-5">
-<h1>Tasks page</h1>
+<h2>Tasks page</h2>
     <form action="/tasks/add" method="post" class="myForm" th:action="@{/tasks/add}">
         <input type="text" name="title" placeholder="Введите название задачи" class="form-control"><br>
         <textarea name="fullText" placeholder="Введите описание задачи" class="form-control"></textarea><br>
