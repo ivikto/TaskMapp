@@ -17,17 +17,46 @@
 <div class="main_container">
 
     <div class="header-container">
-        <button id="openFormButton" class="create_button">Добавить задачу</button>
-        <h2>Паннель задач</h2>
+        <button id="openFormButton2" class="create_button">Изменить задачу</button>
+        <h2>Панель задач</h2>
+        <!-- Форма (изначально скрыта) -->
+        <div id="formPopup" class="form-popup" th:each="el : ${task}">
+            <h4>Изменить задачу</h4>
+            <form action="" method="post" class="myForm" th:action="'/tasks/' + ${el.getId()} + '/edit'">
+                <!-- Поле для названия задачи (обязательное) -->
+                <input type="text" name="title" placeholder="" th:value="${el.getName()}" class="form-control" required><br>
+
+                <!-- Поле для описания задачи (обязательное) -->
+                <textarea name="fullText" placeholder="" th:text="${el.getDescription()}" class="form-control" required></textarea><br>
+
+                <!-- Поле для выбора даты (обязательное) -->
+                <label for="taskDate">Дату:</label>
+                <input type="date" id="taskDate" name="taskDate" class="form-control" th:value="${#dates.format(el.getDate(), 'yyyy-MM-dd')}" required><br>
+
+                <!-- Выпадающий список для выбора исполнителя (обязательное) -->
+                <select name="assignee" id="assigneeDropdown" class="form-control" required>
+                    <option value="" th:value="${el.getAssignee()}">Выберите исполнителя</option>
+                    <option th:each="el : ${users}" th:value="${el.getUsername()}" th:text="${el.getUsername()}"></option>
+                </select><br>
+
+                <!-- Контейнер для кнопок -->
+                <div class="button-container">
+                    <!-- Кнопка для отправки формы -->
+                    <button type="submit" class="create_button">Cохранить</button>
+                    <!-- Кнопка для закрытия формы -->
+                    <button type="button" id="closeFormButton" class="create_button">Закрыть</button>
+                </div>
+            </form>
+        </div>
     </div>
     <div class="task_container">
         <div th:each="el : ${task}" class="task_tab_big">
             <div class="header-row">
-                <a class="taskName" th:text="${el.getName()}"></a>
+                <a class="taskName" th:text="'ID: ' + ${el.getId()} + ' ' + ${el.getName()}"></a>
                 <div class="delDiv">
-                    <a href="#" th:onclick="'editRequest(' + ${el.id} + ')'" class="nav-link">
+                    <button type="button" id="openFormButton" class="edit_button">
                         <img src="/img/edit.png" height="20" width="20" id="editIcon"/>
-                    </a>
+                    </button>
                     <a href="#" th:onclick="'delRequest(' + ${el.id} + ')'" class="nav-link">
                         <img src="/img/delete.png" height="20" width="20" id="delIcon"/>
                     </a>

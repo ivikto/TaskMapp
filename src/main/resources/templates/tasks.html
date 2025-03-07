@@ -18,7 +18,7 @@
 
     <div class="header-container">
         <button id="openFormButton" class="create_button">Добавить задачу</button>
-        <h2>Паннель задач</h2>
+        <h2>Панель задач</h2>
     </div>
 
     <!-- Форма (изначально скрыта) -->
@@ -53,16 +53,16 @@
     <div class="task_container">
         <div th:each="el : ${tasks}" class="task_tab">
             <div class="header-row">
-                <a class="taskName" th:href="'/tasks/' + ${el.id}" th:text="${el.getName()}"></a>
+                <a class="taskName" th:href="'/tasks/' + ${el.id}" th:text="'ID: ' + ${el.getId()} + ' ' + ${el.getName()}"></a>
                 <div class="delDiv">
                     <a href="#" th:onclick="'delRequest(' + ${el.id} + ')'" class="nav-link">
                         <img src="/img/delete.png" height="10" width="10" id="exitIcon"/>
                     </a>
                 </div>
             </div>
-            <p th:text="${el.getDescription()}"></p>
-            <p th:text="'Исполнитель: ' + ${el.getAssignee()}"></p>
-            <p th:text="'Дедлайн: ' + ${el.getDueDate()}"></p>
+            <p th:text="${#strings.abbreviate(el.description, 100)}"></p>
+            <p th:utext="'<strong>Исполнитель:</strong> ' + ${el.getAssignee()}"></p>
+            <p th:utext="'<strong>Дедлайн:</strong> ' + ' ' + ${el.getDueDate()}"></p>
         </div>
     </div>
     <div th:insert="~{parts/footer :: footer}"></div>

@@ -135,6 +135,7 @@ function toggleDropdown() {
 }
 //Форма добавления задачи - tasks.html
 const openFormButton = document.getElementById('openFormButton');
+const openFormButton2 = document.getElementById('openFormButton');
 const closeFormButton = document.getElementById('closeFormButton');
 const formPopup = document.getElementById('formPopup');
 const overlay = document.createElement('div');
@@ -142,6 +143,11 @@ overlay.classList.add('overlay');
 document.body.appendChild(overlay);
 
 openFormButton.addEventListener('click', () => {
+    formPopup.classList.add('active');
+    overlay.classList.add('active');
+});
+
+openFormButton2.addEventListener('click', () => {
     formPopup.classList.add('active');
     overlay.classList.add('active');
 });
@@ -155,4 +161,6 @@ overlay.addEventListener('click', () => {
     formPopup.classList.remove('active');
     overlay.classList.remove('active');
 });
+
+
 

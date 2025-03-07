@@ -21,10 +21,7 @@ public class MainController {
         return "calendar";
     }
 
-    @GetMapping("/news")
-    public String news() {
-        return "news";
-    }
+
 
 
 

@@ -36,7 +36,7 @@ public class TasksController {
     }
 
     @PostMapping("/tasks/add")
-    public String taskAdd(@RequestParam String title, String fullText, Model model, String assignee, String taskDate) {
+    public String taskAdd(@RequestParam String title, String fullText, String assignee, String taskDate) {
         Date date = null;
 
         try {
@@ -71,7 +71,9 @@ public class TasksController {
         }
         ArrayList<Task> list = new ArrayList<>();
         Task task = taskRepository.findById(id).orElseThrow();
+        Iterable<User> users = userRepository.findAll();
         list.add(task);
+        model.addAttribute("users", users);
         model.addAttribute("task", list);
         return "task";
     }
@@ -90,17 +92,22 @@ public class TasksController {
     }
 
     @PostMapping("tasks/{id}/edit")
-    public String taskEditPost(@PathVariable(value = "id") int id, Model model, String name, String fullText, String assignee, String date) {
-        if (!taskRepository.existsById(id)) {
+    public String taskEditPost(@PathVariable(value = "id") String id, Model model, String title, String fullText, String assignee, String taskDate) {
+        System.out.println("ID: " + id);
+        System.out.println("ID: " + id);
+        System.out.println("ID: " + id);
+        System.out.println("ID: " + id);
+
+        if (!taskRepository.existsById(Integer.parseInt(id))) {
             return "redirect:/tasks";
         }
-        Task task = taskRepository.findById(id).orElseThrow();
-        task.setName(name);
+        Task task = taskRepository.findById(Integer.parseInt(id)).orElseThrow();
+        task.setName(title);
         task.setDescription(fullText);
         task.setAssignee(assignee);
         Date newDate = null;
         try {
-            newDate = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH).parse(date);
+            newDate = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH).parse(taskDate);
         } catch (ParseException e) {
             System.out.println("Date error: " + e.getMessage());
         }

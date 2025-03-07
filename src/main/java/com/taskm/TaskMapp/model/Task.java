@@ -1,6 +1,7 @@
 package com.taskm.TaskMapp.model;
 
 import jakarta.persistence.*;
+import lombok.Setter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,6 +80,12 @@ public class Task {
 
 
         return formattedDate;
+    }
+
+    public Date getDate() {
+
+
+        return dueDate;
     }
 
     public void setDueDate(Date dueDate) {
