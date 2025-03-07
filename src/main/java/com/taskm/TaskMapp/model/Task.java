@@ -2,6 +2,7 @@ package com.taskm.TaskMapp.model;
 
 import jakarta.persistence.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,15 +15,32 @@ public class Task {
     private Long id;
     private String name;
     private String description;
+    private String assignee;
+    private Date dueDate;
 
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
+
+    }
+
+    public Task(String name, String description, String assignee) {
+        this.name = name;
+        this.description = description;
+        this.assignee = assignee;
+
     }
 
     public Task() {
 
+    }
+
+    public Task(String name, String description, String assignee, Date dueDate) {
+        this.name = name;
+        this.description = description;
+        this.assignee = assignee;
+        this.dueDate = dueDate;
     }
 
 
@@ -47,4 +65,23 @@ public class Task {
     }
 
 
+    public String getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
+    }
+
+    public String getDueDate() {
+        SimpleDateFormat outputFormat = new SimpleDateFormat("dd.MM.yyyy");
+        String formattedDate = outputFormat.format(dueDate);
+
+
+        return formattedDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
 }

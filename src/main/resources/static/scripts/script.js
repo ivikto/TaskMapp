@@ -1,3 +1,4 @@
+// Кнопка выхода в шапке header.html
 document.addEventListener('DOMContentLoaded', function () {
     function logoutRequest() {
         const csrfToken = document.querySelector('meta[name="_csrf"]').content;
@@ -17,10 +18,64 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.appendChild(form);
         form.submit();
     }
-
     // Делаем функцию глобальной, чтобы она была доступна в HTML
     window.logoutRequest = logoutRequest;
 });
+
+// Кнопка удаления задачи tasks.html
+document.addEventListener('DOMContentLoaded', function () {
+    function delRequest(taskId) {
+        alert("DEL BUTTON")
+        const url = `/tasks/${taskId}/del`; //"/tasks/{id}/del"
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url; // Укажи URL для POST-запроса
+
+        // Создаём скрытое поле для CSRF-токена
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_csrf'; // Имя CSRF-токена
+        csrfInput.value = csrfToken; // Значение CSRF-токена
+        form.appendChild(csrfInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+    // Делаем функцию глобальной, чтобы она была доступна в HTML
+    window.delRequest = delRequest;
+});
+
+// Кнопка изменения задачи task.html
+document.addEventListener('DOMContentLoaded', function () {
+    function editRequest(taskId) {
+        alert("EDIT BUTTON")
+        const url = `/tasks/${taskId}/edit`; //"/tasks/{id}/del"
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+        const form = document.createElement('form');
+        form.method = 'GET';
+        form.action = url; // Укажи URL для GET-запроса
+
+        // Создаём скрытое поле для CSRF-токена
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_csrf'; // Имя CSRF-токена
+        csrfInput.value = csrfToken; // Значение CSRF-токена
+        form.appendChild(csrfInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+    // Делаем функцию глобальной, чтобы она была доступна в HTML
+    window.editRequest = editRequest;
+});
+
 
     // Находим все элементы с классом .nav-link
     const navLinks = document.querySelectorAll('.nav-link');
@@ -67,3 +122,37 @@ exitIcon.addEventListener('mouseenter', () => {
 exitIcon.addEventListener('mouseleave', () => {
     exitIcon.src = '/img/exit-1.png'; // Возвращаем исходное изображение
 });
+
+//Выпадающий список для страницы tasks
+
+function toggleDropdown() {
+    const dropdownContent = document.getElementById("dropdownContent");
+    if (dropdownContent.style.display === "block") {
+        dropdownContent.style.display = "none"; // Скрываем список
+    } else {
+        dropdownContent.style.display = "block"; // Показываем список
+    }
+}
+//Форма добавления задачи - tasks.html
+const openFormButton = document.getElementById('openFormButton');
+const closeFormButton = document.getElementById('closeFormButton');
+const formPopup = document.getElementById('formPopup');
+const overlay = document.createElement('div');
+overlay.classList.add('overlay');
+document.body.appendChild(overlay);
+
+openFormButton.addEventListener('click', () => {
+    formPopup.classList.add('active');
+    overlay.classList.add('active');
+});
+
+closeFormButton.addEventListener('click', () => {
+    formPopup.classList.remove('active');
+    overlay.classList.remove('active');
+});
+
+overlay.addEventListener('click', () => {
+    formPopup.classList.remove('active');
+    overlay.classList.remove('active');
+});
+
