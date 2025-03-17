@@ -1,9 +1,13 @@
 package com.taskm.TaskMapp.controllers;
 
+import com.taskm.TaskMapp.model.Task;
+import com.taskm.TaskMapp.model.User;
 import com.taskm.TaskMapp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -14,13 +18,15 @@ public class RegistrationController {
     private UserService userService;
 
     @GetMapping("/register")
-    public String showRegistrationForm() {
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("user", new User());
         return "register"; // Возвращает страницу регистрации
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestParam String username, @RequestParam String password, @RequestParam String email, @RequestParam String phone) {
-        userService.registerUser(username, password, email, phone);
+    public String registerUser(@ModelAttribute("user") User user) {
+        userService.registerUser(user);
+
         return "redirect:/login"; // Перенаправляет на страницу входа
     }
 

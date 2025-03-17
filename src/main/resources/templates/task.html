@@ -18,25 +18,25 @@
 
     <div class="header-container">
         <button id="openFormButton2" class="create_button">Изменить задачу</button>
-        <h2>Панель задач</h2>
+        <h2>Панель редактирования</h2>
         <!-- Форма (изначально скрыта) -->
         <div id="formPopup" class="form-popup" th:each="el : ${task}">
             <h4>Изменить задачу</h4>
-            <form action="" method="post" class="myForm" th:action="'/tasks/' + ${el.getId()} + '/edit'">
+            <form action=""  th:method="POST" th:object="${taskEdit}" class="myForm" th:action="'/tasks/' + ${el.getId()} + '/edit'">
                 <!-- Поле для названия задачи (обязательное) -->
-                <input type="text" name="title" placeholder="" th:value="${el.getName()}" class="form-control" required><br>
+                <input type="text" th:field="*{name}" name="title" placeholder="" th:value="${el.getName()}" class="form-control" required><br>
 
                 <!-- Поле для описания задачи (обязательное) -->
-                <textarea name="fullText" placeholder="" th:text="${el.getDescription()}" class="form-control" required></textarea><br>
+                <textarea name="fullText" th:field="*{description}" placeholder="" th:text="${el.getDescription()}" class="form-control" required></textarea><br>
 
                 <!-- Поле для выбора даты (обязательное) -->
                 <label for="taskDate">Дату:</label>
-                <input type="date" id="taskDate" name="taskDate" class="form-control" th:value="${#dates.format(el.getDate(), 'yyyy-MM-dd')}" required><br>
+                <input type="date" th:field="*{dueDate}" id="taskDate" name="taskDate" class="form-control" th:value="${#temporals.format(el.getDueDate(), 'dd.MM.yyyy')}" required><br>
 
                 <!-- Выпадающий список для выбора исполнителя (обязательное) -->
                 <select name="assignee" id="assigneeDropdown" class="form-control" required>
                     <option value="" th:value="${el.getAssignee()}">Выберите исполнителя</option>
-                    <option th:each="el : ${users}" th:value="${el.getUsername()}" th:text="${el.getUsername()}"></option>
+                    <option th:field="*{assignee}" th:each="el : ${users}" th:value="${el.getUsername()}" th:text="${el.getUsername()}"></option>
                 </select><br>
 
                 <!-- Контейнер для кнопок -->
@@ -63,8 +63,8 @@
                 </div>
             </div>
             <p th:text="${el.getDescription()}"></p>
-            <p th:text="'Исполнитель: ' + ${el.getAssignee()}"></p>
-            <p th:text="'Дедлайн: ' + ${el.getDueDate()}"></p>
+            <p th:utext="'<strong>Исполнитель:</strong> ' + ${el.getAssignee()}"></p>
+            <p th:utext="'<strong>Дедлайн:</strong> ' + ' ' + ${#temporals.format(el.getDueDate(), 'dd.MM.yyyy')}"></p>
         </div>
     </div>
     <div th:insert="~{parts/footer :: footer}"></div>

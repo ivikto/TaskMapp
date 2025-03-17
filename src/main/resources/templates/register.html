@@ -51,32 +51,32 @@
 </head>
 <body class="text-center">
 <main class="form-registration">
-    <form th:action="@{/register}" method="post">
+    <form th:action="@{/register}" th:method="POST" th:object="${user}" method="post" >
         <!-- Логотип или заголовок -->
         <img src="/img/java.png" height="100" width="100"/>
         <h1 class="h3 mb-3 fw-normal">Регистрация</h1>
 
         <!-- Поле для имени пользователя -->
         <div class="form-floating">
-            <input type="text" class="form-control" id="username" name="username" placeholder="Имя пользователя" required>
+            <input type="text" th:field="*{username}" class="form-control" id="username" name="username" placeholder="Имя пользователя" required>
             <label for="username">Имя пользователя</label>
         </div>
 
         <!-- Поле для пароля -->
         <div class="form-floating">
-            <input type="password" class="form-control" id="password" name="password" placeholder="Пароль" required>
+            <input type="password" th:field="*{password}" class="form-control" id="password" name="password" placeholder="Пароль" required>
             <label for="password">Пароль</label>
         </div>
 
         <!-- Поле для email -->
         <div class="form-floating">
-            <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+            <input type="email" th:field="*{email}" class="form-control" id="email" name="email" placeholder="Email" required>
             <label for="email">Email</label>
         </div>
 
         <!-- Поле для телефона -->
         <div class="form-floating">
-            <input type="text" class="form-control" id="phone" name="phone" placeholder="Телефон">
+            <input type="text" th:field="*{phone}" class="form-control" id="phone" name="phone" placeholder="Телефон">
             <label for="phone">Телефон</label>
         </div>
 

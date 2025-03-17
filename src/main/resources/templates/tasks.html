@@ -24,21 +24,21 @@
     <!-- Форма (изначально скрыта) -->
     <div id="formPopup" class="form-popup">
         <h4>Добавить задачу</h4>
-        <form action="/tasks/add" method="post" class="myForm" th:action="@{/tasks/add}">
+        <form th:method="POST" th:action="@{/tasks/add}" th:object="${task}" class="myForm">
             <!-- Поле для названия задачи (обязательное) -->
-            <input type="text" name="title" placeholder="Введите название задачи" class="form-control" required><br>
+            <input type="text" name="title" th:field="*{name}" placeholder="Введите название задачи" class="form-control" required><br>
 
             <!-- Поле для описания задачи (обязательное) -->
-            <textarea name="fullText" placeholder="Введите описание задачи" class="form-control" required></textarea><br>
+            <textarea name="fullText" th:field="*{description}" placeholder="Введите описание задачи" class="form-control" required></textarea><br>
 
             <!-- Поле для выбора даты (обязательное) -->
             <label for="taskDate">Выберите дату:</label>
-            <input type="date" id="taskDate" name="taskDate" class="form-control" required><br>
+            <input type="date" id="taskDate" name="taskDate"  th:field="*{dueDate}" class="form-control" required><br>
 
             <!-- Выпадающий список для выбора исполнителя (обязательное) -->
             <select name="assignee" id="assigneeDropdown" class="form-control" required>
                 <option value="">Выберите исполнителя</option>
-                <option th:each="el : ${users}" th:value="${el.getUsername()}" th:text="${el.getUsername()}"></option>
+                <option th:field="*{assignee}" th:each="el : ${users}" th:value="${el.getUsername()}" th:text="${el.getUsername()} "></option>
             </select><br>
 
             <!-- Контейнер для кнопок -->
@@ -62,7 +62,7 @@
             </div>
             <p th:text="${#strings.abbreviate(el.description, 100)}"></p>
             <p th:utext="'<strong>Исполнитель:</strong> ' + ${el.getAssignee()}"></p>
-            <p th:utext="'<strong>Дедлайн:</strong> ' + ' ' + ${el.getDueDate()}"></p>
+            <p th:utext="'<strong>Дедлайн:</strong> ' + ' ' + ${#temporals.format(el.getDueDate(), 'dd.MM.yyyy')}"></p>
         </div>
     </div>
     <div th:insert="~{parts/footer :: footer}"></div>

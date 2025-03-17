@@ -22,11 +22,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public void registerUser(String username, String password, String email, String phone) {
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password)); // Шифруем пароль
+    public void registerUser(User user) {
         user.setRoles(Collections.singleton("ROLE_USER")); // Устанавливаем роль по умолчанию
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // Шифруем пароль
         userRepository.save(user);
     }
 

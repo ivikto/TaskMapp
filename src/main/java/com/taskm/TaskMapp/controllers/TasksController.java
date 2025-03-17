@@ -6,14 +6,13 @@ import com.taskm.TaskMapp.repo.TaskRepository;
 import com.taskm.TaskMapp.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -32,20 +31,12 @@ public class TasksController {
         Iterable<User> users = userRepository.findAll();
         model.addAttribute("tasks", tasks);
         model.addAttribute("users", users);
+        model.addAttribute("task", new Task());
         return "tasks";
     }
 
     @PostMapping("/tasks/add")
-    public String taskAdd(@RequestParam String title, String fullText, String assignee, String taskDate) {
-        Date date = null;
-
-        try {
-            date = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(taskDate);
-        } catch (ParseException e) {
-            System.out.println("Ошибка даты: " + e.getMessage());
-        }
-
-        Task task = new Task(title, fullText, assignee, date);
+    public String taskAdd(@ModelAttribute("task") Task task) {
         taskRepository.save(task);
         return "redirect:/tasks";
     }
@@ -75,6 +66,7 @@ public class TasksController {
         list.add(task);
         model.addAttribute("users", users);
         model.addAttribute("task", list);
+        model.addAttribute("taskEdit", new Task());
         return "task";
     }
 
@@ -87,32 +79,25 @@ public class TasksController {
         ArrayList<Task> list = new ArrayList<>();
         list.add(task);
         model.addAttribute("task", list);
+        model.addAttribute("task", task);
 
         return "task_edit";
     }
 
     @PostMapping("tasks/{id}/edit")
-    public String taskEditPost(@PathVariable(value = "id") String id, Model model, String title, String fullText, String assignee, String taskDate) {
-        System.out.println("ID: " + id);
-        System.out.println("ID: " + id);
-        System.out.println("ID: " + id);
-        System.out.println("ID: " + id);
+    @Transactional
+    public String taskEditPost(@PathVariable int id, @ModelAttribute("task") Task task) {
 
-        if (!taskRepository.existsById(Integer.parseInt(id))) {
+        if (!taskRepository.existsById(id)) {
             return "redirect:/tasks";
         }
-        Task task = taskRepository.findById(Integer.parseInt(id)).orElseThrow();
-        task.setName(title);
-        task.setDescription(fullText);
-        task.setAssignee(assignee);
-        Date newDate = null;
-        try {
-            newDate = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH).parse(taskDate);
-        } catch (ParseException e) {
-            System.out.println("Date error: " + e.getMessage());
-        }
-        task.setDueDate(newDate);
-        taskRepository.save(task);
+        Task oldTask = taskRepository.findById(id).orElseThrow();
+        oldTask.setName(task.getName());
+        oldTask.setDescription(task.getDescription());
+        oldTask.setDueDate(task.getDueDate());
+        oldTask.setAssignee(task.getAssignee());
+
+        taskRepository.save(oldTask);
 
         return "redirect:/tasks";
     }

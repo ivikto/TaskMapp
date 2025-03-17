@@ -2,8 +2,13 @@ package com.taskm.TaskMapp.model;
 
 import jakarta.persistence.*;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,7 +22,8 @@ public class Task {
     private String name;
     private String description;
     private String assignee;
-    private Date dueDate;
+    @DateTimeFormat(pattern = "dd.MM.yyyy")
+    private LocalDate dueDate;
 
 
     public Task(String name, String description) {
@@ -37,7 +43,7 @@ public class Task {
 
     }
 
-    public Task(String name, String description, String assignee, Date dueDate) {
+    public Task(String name, String description, String assignee, LocalDate dueDate) {
         this.name = name;
         this.description = description;
         this.assignee = assignee;
@@ -74,21 +80,29 @@ public class Task {
         this.assignee = assignee;
     }
 
-    public String getDueDate() {
-        SimpleDateFormat outputFormat = new SimpleDateFormat("dd.MM.yyyy");
-        String formattedDate = outputFormat.format(dueDate);
-
-
-        return formattedDate;
+    public LocalDate getDueDate() {
+        return dueDate;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
 
 
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", assignee='" + assignee + '\'' +
+                ", dueDate=" + dueDate +
+                '}';
+    }
 }
+
