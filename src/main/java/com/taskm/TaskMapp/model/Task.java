@@ -1,6 +1,10 @@
 package com.taskm.TaskMapp.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,10 +23,17 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotEmpty
+    @Size(min = 5, max = 50, message = "Наименование должно содержать от 5 до 50 символов")
     private String name;
+    @NotEmpty
+    @Size(min = 5, max = 1000, message = "Описание должно содержать от 5 до 50 символов")
     private String description;
+    @NotEmpty(message = "Поле исполнитель должно быть заполнено")
     private String assignee;
-    @DateTimeFormat(pattern = "dd.MM.yyyy")
+    @NotNull(message = "Поле дата должно быть заполнено")
+    @Future
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
 
 

@@ -4,10 +4,16 @@ import com.taskm.TaskMapp.model.Task;
 import com.taskm.TaskMapp.model.User;
 import com.taskm.TaskMapp.repo.TaskRepository;
 import com.taskm.TaskMapp.repo.UserRepository;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -25,6 +31,9 @@ public class TasksController {
     @Autowired
     private UserRepository userRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(TasksController.class);
+    private static Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
     @GetMapping("/tasks")
     public String tasks(Model model) {
         Iterable<Task> tasks = taskRepository.findAll();
@@ -37,7 +46,14 @@ public class TasksController {
 
     @PostMapping("/tasks/add")
     public String taskAdd(@ModelAttribute("task") Task task) {
+        logger.info("Cоздание задачи: {}", task.getName());
+
         taskRepository.save(task);
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName(); // Имя пользователя
+            logger.info("Пользователь {} создал задачу: {}, ID: {}", username, task.getName(), task.getId());
+        }
         return "redirect:/tasks";
     }
 
@@ -50,7 +66,12 @@ public class TasksController {
     @PostMapping("/tasks/{id}/del")
     public String addPostDel(@PathVariable(value = "id") long id, Model model) {
         Task task = taskRepository.findById((int) id).orElseThrow();
+        logger.debug("Удаление задачи: {}", task.getName());
         taskRepository.delete(task);
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName(); // Имя пользователя
+            logger.info("Пользователь {} удалил задачу: {}, ID: {}", username, task.getName(), task.getId());
+        }
 
         return "redirect:/tasks";
     }
@@ -66,7 +87,7 @@ public class TasksController {
         list.add(task);
         model.addAttribute("users", users);
         model.addAttribute("task", list);
-        model.addAttribute("taskEdit", new Task());
+        model.addAttribute("taskEdit", task);
         return "task";
     }
 
@@ -86,7 +107,16 @@ public class TasksController {
 
     @PostMapping("tasks/{id}/edit")
     @Transactional
-    public String taskEditPost(@PathVariable int id, @ModelAttribute("task") Task task) {
+    public String taskEditPost(@PathVariable int id, @ModelAttribute("task") @Valid Task task, BindingResult result) {
+        if (result.hasErrors()) {
+            System.out.println(result.getAllErrors());
+            return "redirect:/tasks/" + id;
+        }
+        // Получение информации о текущем пользователе
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName(); // Имя пользователя
+            logger.info("Пользователь {} редактирует задачу: {}", username, task.getName());
+        }
 
         if (!taskRepository.existsById(id)) {
             return "redirect:/tasks";
@@ -98,6 +128,10 @@ public class TasksController {
         oldTask.setAssignee(task.getAssignee());
 
         taskRepository.save(oldTask);
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName(); // Имя пользователя
+            logger.info("Пользователь {} отредактировал задачу: {}", username, task.getName());
+        }
 
         return "redirect:/tasks";
     }

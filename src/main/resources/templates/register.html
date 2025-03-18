@@ -59,12 +59,14 @@
         <!-- Поле для имени пользователя -->
         <div class="form-floating">
             <input type="text" th:field="*{username}" class="form-control" id="username" name="username" placeholder="Имя пользователя" required>
+            <div style="font-size: 12px; font-weight: bold; color: red;" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">UserNameError</div>
             <label for="username">Имя пользователя</label>
         </div>
 
         <!-- Поле для пароля -->
         <div class="form-floating">
             <input type="password" th:field="*{password}" class="form-control" id="password" name="password" placeholder="Пароль" required>
+            <div style="font-size: 12px; font-weight: bold; color: red;" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">UserNameError</div>
             <label for="password">Пароль</label>
         </div>
 

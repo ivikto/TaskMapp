@@ -1,6 +1,7 @@
 package com.taskm.TaskMapp.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
@@ -15,15 +16,25 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable = false)
+    @NotEmpty
+    @Size(min = 3, max = 30, message = "Имя пользователя должно содержать от 3 до 30 символов")
     private String username;
     @Column(nullable = false)
+    @NotEmpty
+    @NotBlank(message = "Пароль не может быть пустым")
+    @Size(min = 8, max = 20, message = "Пароль должен быть от 8 до 20 символов")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
+            message = "Пароль должен содержать хотя бы одну цифру, одну заглавную букву, одну строчную букву и один специальный символ")
     private String password;
     private boolean enabled;
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     private Set<String> roles;
+    @Email
+    @NotEmpty
     private String email;
+    @NotEmpty
     private String phone;
 
     public Long getId() {

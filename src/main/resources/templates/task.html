@@ -24,14 +24,17 @@
             <h4>Изменить задачу</h4>
             <form action=""  th:method="POST" th:object="${taskEdit}" class="myForm" th:action="'/tasks/' + ${el.getId()} + '/edit'">
                 <!-- Поле для названия задачи (обязательное) -->
-                <input type="text" th:field="*{name}" name="title" placeholder="" th:value="${el.getName()}" class="form-control" required><br>
+                <input type="text" th:field="*{name}" name="title" placeholder=""  class="form-control" required><br>
+                <div style="font-size: 12px; font-weight: bold; color: red;" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">UserNameError</div>
 
                 <!-- Поле для описания задачи (обязательное) -->
-                <textarea name="fullText" th:field="*{description}" placeholder="" th:text="${el.getDescription()}" class="form-control" required></textarea><br>
+                <textarea name="fullText" th:field="*{description}" placeholder=""  class="form-control" required></textarea><br>
+                <div style="font-size: 12px; font-weight: bold; color: red;" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">UserNameError</div>
 
                 <!-- Поле для выбора даты (обязательное) -->
                 <label for="taskDate">Дату:</label>
-                <input type="date" th:field="*{dueDate}" id="taskDate" name="taskDate" class="form-control" th:value="${#temporals.format(el.getDueDate(), 'dd.MM.yyyy')}" required><br>
+
+                <input type="date" th:field="*{dueDate}" id="taskDate" name="taskDate" class="form-control" required><br>
 
                 <!-- Выпадающий список для выбора исполнителя (обязательное) -->
                 <select name="assignee" id="assigneeDropdown" class="form-control" required>
