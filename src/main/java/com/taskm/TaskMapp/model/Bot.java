@@ -1,5 +1,6 @@
 package com.taskm.TaskMapp.model;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
@@ -13,7 +14,8 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 @Component
 public class Bot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
-    private static String botToken = "7508015732:AAF6fWMUOyNyG8iAHq86atFueLLFNdL0Cw8";
+    @Value("${bot.pass}")
+    private static String botToken;
     private static TelegramClient telegramClient;
 
     public Bot() {
