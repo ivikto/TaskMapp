@@ -32,7 +32,7 @@ public class Task {
     @NotEmpty(message = "Поле исполнитель должно быть заполнено")
     private String assignee;
     @NotNull(message = "Поле дата должно быть заполнено")
-    @Future
+    @Future(message = "Срок по задаче не может содержать дату которая уже прошла")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
 

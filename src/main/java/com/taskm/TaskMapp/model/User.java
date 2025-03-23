@@ -22,7 +22,7 @@ public class User {
     @Column(nullable = false)
     @NotEmpty
     @NotBlank(message = "Пароль не может быть пустым")
-    @Size(min = 8, max = 20, message = "Пароль должен быть от 8 до 20 символов")
+    @Size(min = 8, max = 60, message = "Пароль должен быть от 8 до 20 символов")
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
             message = "Пароль должен содержать хотя бы одну цифру, одну заглавную букву, одну строчную букву и один специальный символ")
     private String password;
