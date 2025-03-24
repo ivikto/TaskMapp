@@ -36,11 +36,6 @@
                 <span th:text="'Дата публикации: ' + *{date}">Дата</span>
                 <span th:text="'Просмотров: ' + *{views}">Просмотров</span>
                 <div class="like-container" th:data-news-id="*{id}">
-                    <button class="heart-btn"
-                            th:classappend="${#authentication.principal.username != null && el.likedUsers.contains(#authentication.principal.username)} ? 'liked' : ''">
-                                             <span class="heart-icon">          ♥</span>
-                        <span class="likes-count" th:text="*{likes}">0</span>
-                    </button>
                 </div>
             </div>
         </div>

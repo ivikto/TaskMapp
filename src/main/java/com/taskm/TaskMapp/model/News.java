@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,19 +21,42 @@ public class News {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotEmpty
-    @Size(min = 5, max = 50, message = "Наименование должно содержать от 5 до 50 символов")
+    @NotEmpty(message = "Title не может быть пустым")
+    @Size(min = 5, max = 100, message = "Наименование должно содержать от 5 до 100 символов")
     private String title;
-    @NotEmpty
-    @Size(min = 5, max = 1000, message = "Описание должно содержать от 5 до 50 символов")
+    @NotEmpty(message = "Content не может быть пустым")
+    @Size(min = 5, max = 5000, message = "Описание должно содержать от 5 до 5000 символов")
     private String content;
-    @NotEmpty
+    @NotEmpty(message = "Author не может быть пустым")
     private String author;
-    @NotEmpty
-    @NotNull(message = "Поле дата должно быть заполнено")
-    private String date;
-    @NotEmpty
+    private LocalTime date;
+    @NotEmpty(message = "Link не может быть пустым")
     private String imageLink;
+
+    public void setDate(LocalTime date) {
+        this.date = date;
+    }
+
+
+    public void setViews(int views) {
+        this.views = views;
+    }
+
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     private int views;
 
@@ -60,7 +85,7 @@ public class News {
         return author;
     }
 
-    public String getDate() {
+    public LocalTime getDate() {
         return date;
     }
 

@@ -1,33 +1,38 @@
 package com.taskm.TaskMapp.controllers;
 
+import com.taskm.TaskMapp.model.Bot;
 import com.taskm.TaskMapp.model.News;
-import com.taskm.TaskMapp.model.Task;
-import com.taskm.TaskMapp.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.taskm.TaskMapp.repo.NewsRepository;
 import com.taskm.TaskMapp.repo.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.time.LocalTime;
 import java.util.*;
 
 @Controller
 public class NewsController {
-    @Autowired
-    private UserRepository userRepository;
+
     @Autowired
     private NewsRepository newsRepository;
 
     private static final String redirect = "redirect:/news";
+
+    private static final Logger logger = LoggerFactory.getLogger(TasksController.class);
+    //private static final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
     @GetMapping("/news")
     public String news(Model model) {
@@ -35,6 +40,7 @@ public class NewsController {
         try {
             Iterable<News> news = newsRepository.findAll();
             model.addAttribute("news", news);
+            model.addAttribute("emptyNews", new News());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -52,6 +58,42 @@ public class NewsController {
         model.addAttribute("news", news);
 
         return "new";
+    }
+
+    @PostMapping("/news/add")
+    public String newsAdd(@ModelAttribute("news") News news, RedirectAttributes redirectAttributes) {
+        logger.info("Cоздание новости: {}", news.getTitle());
+
+        LocalTime now = LocalTime.now();
+        System.out.println(now);
+        news.setDate(now);
+        news.setLikes(0);
+        news.setViews(0);
+        news.setAuthor("Ivikto");
+
+        try {
+            newsRepository.save(news);
+        } catch (ConstraintViolationException e) {
+            Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
+            StringBuilder errorMessage = new StringBuilder("Ошибка валидации: ");
+
+            // Собираем все сообщения об ошибках
+            for (ConstraintViolation<?> violation : violations) {
+                errorMessage.append(violation.getMessage()).append("; ");
+            }
+
+            // Добавляем сообщение об ошибке в RedirectAttributes
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage.toString());
+            return "redirect:/error";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при создании задачи: " + e.getMessage());
+            return "redirect:/error";
+        }
+
+        String message = String.format("Создана новая новость: %s, Исполнитель: %s", news.getTitle(), news.getAuthor());
+        Bot.sendMessage(message);
+        return redirect;
     }
 
     @PostMapping("/news/{id}/like")

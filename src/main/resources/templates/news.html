@@ -19,19 +19,42 @@
 
 <div class="main_container">
     <div class="header-container">
-        <button id="openNewsFormButton" class="create_button">Добавить новость</button>
+        <button id="openFormButton" class="create_button">Добавить новость</button>
         <h2>Лента новостей</h2>
+    </div>
+    <!-- Форма (изначально скрыта) -->
+    <div id="formPopup" class="form-popup">
+        <h4>Добавить задачу</h4>
+        <form action="/news/add" method="post" class="myForm" th:action="@{/news/add}" th:object="${emptyNews}">
+            <!-- Поле для названия задачи (обязательное) -->
+            <input type="text" th:field="*{title}" name="title" placeholder="Введите наименование новости" class="form-control" required><br>
+
+            <!-- Поле для описания задачи (обязательное) -->
+            <textarea name="fullText" th:field="*{content}" placeholder="Введите описание новости " class="form-control" required></textarea><br>
+            <!-- Поле для ссылки на картинку (обязательное) -->
+            <input type="text" th:field="*{imageLink}" name="link" placeholder="Вставьте ссылку на изображение" class="form-control" required><br>
+
+
+            <!-- Контейнер для кнопок -->
+            <div class="button-container">
+                <!-- Кнопка для отправки формы -->
+                <button type="submit" class="create_button">Создать</button>
+                <!-- Кнопка для закрытия формы -->
+                <button type="button" id="closeFormButton" class="create_button">Закрыть</button>
+            </div>
+        </form>
     </div>
     <div class="news_container" th:each="el : ${news}">
         <div class="image-container">
             <img th:src="${el.imageLink}" alt="News image" class="news-image"/>
         </div>
         <div class="header-container">
-            <h3 th:text="${el.title}">Заголовок новости</h3>
+           <a th:href="'/news/' + ${el.id}"> <h3 th:text="${el.title}">Заголовок новости</h3></a>
             <p th:text="'Автор: ' + ${el.author}">Имя автора</p>
         </div>
         <div class="task_container">
-            <p class="news_content" th:text="${el.content}">Содержание новости</p>
+            <p class="news_content" th:text="${#strings.abbreviate(el.content, 600)}">Содержание новости</p>
+            <a th:href="'/news/' + ${el.id}">Читать дальше...</a>
             <div class="news-footer">
                 <span th:text="'Дата публикации: ' + ${el.date}">Дата</span>
                 <span th:text="'Просмотров: ' + ${el.views}">Просмотров</span>
