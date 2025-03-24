@@ -22,24 +22,24 @@
         <button id="openNewsFormButton" class="create_button">Добавить новость</button>
         <h2>Лента новостей</h2>
     </div>
-    <div class="news_container" th:each="el : ${news}">
+    <div class="news_container" th:object="${news}">
         <div class="image-container">
-            <img th:src="${el.imageLink}" alt="News image" class="news-image"/>
+            <img th:src="*{imageLink}" alt="News image" class="news-image"/>
         </div>
         <div class="header-container">
-            <h3 th:text="${el.title}">Заголовок новости</h3>
-            <p th:text="'Автор: ' + ${el.author}">Имя автора</p>
+            <h3 th:text="*{title}">Заголовок новости</h3>
+            <p th:text="'Автор: ' + *{author}">Имя автора</p>
         </div>
         <div class="task_container">
-            <p class="news_content" th:text="${el.content}">Содержание новости</p>
+            <p class="news_content" th:text="*{content}">Содержание новости</p>
             <div class="news-footer">
-                <span th:text="'Дата публикации: ' + ${el.date}">Дата</span>
-                <span th:text="'Просмотров: ' + ${el.views}">Просмотров</span>
-                <div class="like-container" th:data-news-id="${el.id}">
+                <span th:text="'Дата публикации: ' + *{date}">Дата</span>
+                <span th:text="'Просмотров: ' + *{views}">Просмотров</span>
+                <div class="like-container" th:data-news-id="*{id}">
                     <button class="heart-btn"
                             th:classappend="${#authentication.principal.username != null && el.likedUsers.contains(#authentication.principal.username)} ? 'liked' : ''">
                                              <span class="heart-icon">          ♥</span>
-                        <span class="likes-count" th:text="${el.likes}">0</span>
+                        <span class="likes-count" th:text="*{likes}">0</span>
                     </button>
                 </div>
             </div>

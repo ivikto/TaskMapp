@@ -106,8 +106,9 @@
 }
 
 .heart-icon {
-    font-size: 1.2rem;
+    font-size: 2rem;
     margin-right: 5px;
+    margin-left: 80px;
 }
 
 .heart-btn.liked .heart-icon {

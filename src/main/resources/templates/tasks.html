@@ -65,8 +65,9 @@
             <p th:utext="'<strong>Дедлайн:</strong> ' + ' ' + ${#temporals.format(el.getDueDate(), 'dd.MM.yyyy')}"></p>
         </div>
     </div>
-    <div th:insert="~{parts/footer :: footer}"></div>
+
 </div>
+<div th:insert="~{parts/footer :: footer}"></div>
 
 <script src="/scripts/script.js"></script>
 </body>

@@ -2,6 +2,7 @@ package com.taskm.TaskMapp.controllers;
 
 import com.taskm.TaskMapp.model.News;
 import com.taskm.TaskMapp.model.Task;
+import com.taskm.TaskMapp.model.User;
 import com.taskm.TaskMapp.repo.NewsRepository;
 import com.taskm.TaskMapp.repo.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,10 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 public class NewsController {
@@ -28,6 +26,8 @@ public class NewsController {
     private UserRepository userRepository;
     @Autowired
     private NewsRepository newsRepository;
+
+    private static final String redirect = "redirect:/news";
 
     @GetMapping("/news")
     public String news(Model model) {
@@ -41,6 +41,17 @@ public class NewsController {
         }
 
         return "news";
+    }
+
+    @GetMapping("/news/{id}")
+    public String taskView(@PathVariable(value = "id") int id, Model model) {
+        if (!newsRepository.existsById(id)) {
+            return redirect;
+        }
+        News news = newsRepository.findById(id).orElseThrow();
+        model.addAttribute("news", news);
+
+        return "new";
     }
 
     @PostMapping("/news/{id}/like")
