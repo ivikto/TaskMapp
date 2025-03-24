@@ -1,165 +1,187 @@
-// Кнопка выхода в шапке header.html
-document.addEventListener('DOMContentLoaded', function () {
-    function logoutRequest() {
-        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+// Общий обработчик DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded and parsed');
 
+    // Инициализация CSRF токена
+    const csrfTokenMeta = document.querySelector('meta[name="_csrf"]');
+    const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+    let csrfToken = '';
+    let csrfHeader = '';
 
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '/logout'; // Укажи URL для POST-запроса
-
-        // Создаём скрытое поле для CSRF-токена
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = '_csrf'; // Имя CSRF-токена
-        csrfInput.value = csrfToken; // Значение CSRF-токена
-        form.appendChild(csrfInput);
-
-        document.body.appendChild(form);
-        form.submit();
+    if (csrfTokenMeta && csrfHeaderMeta) {
+        csrfToken = csrfTokenMeta.content;
+        csrfHeader = csrfHeaderMeta.content;
+    } else {
+        console.warn('CSRF tokens not found!');
     }
-    // Делаем функцию глобальной, чтобы она была доступна в HTML
-    window.logoutRequest = logoutRequest;
-});
 
-// Кнопка удаления задачи tasks.html
-document.addEventListener('DOMContentLoaded', function () {
-    function delRequest(taskId) {
-        const url = `/tasks/${taskId}/del`; //"/tasks/{id}/del"
+    // 1. Обработчик для кнопки лайка
+    function handleLikeClick(e) {
+        const button = e.target.closest('.heart-btn');
+        if (!button) return;
 
-        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+        e.preventDefault();
+        e.stopPropagation();
 
+        const container = button.closest('.like-container');
+        if (!container) {
+            console.error('Like container not found');
+            return;
+        }
 
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = url; // Укажи URL для POST-запроса
+        const newsId = container.dataset.newsId;
+        const likesCount = button.querySelector('.likes-count');
+        const heartIcon = button.querySelector('.heart-icon');
 
-        // Создаём скрытое поле для CSRF-токена
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = '_csrf'; // Имя CSRF-токена
-        csrfInput.value = csrfToken; // Значение CSRF-токена
-        form.appendChild(csrfInput);
+        if (!newsId || !likesCount || !heartIcon) {
+            console.error('Required elements not found');
+            return;
+        }
 
-        document.body.appendChild(form);
-        form.submit();
+        // Оптимистичное обновление UI
+        const wasLiked = button.classList.contains('liked');
+        button.disabled = true;
+        heartIcon.textContent = wasLiked ? '♡' : '♥';
+        likesCount.textContent = wasLiked
+            ? parseInt(likesCount.textContent) - 1
+            : parseInt(likesCount.textContent) + 1;
+
+        fetch(`/news/${newsId}/like`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+                [csrfHeader]: csrfToken
+            }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                button.classList.toggle('liked', data.isLiked);
+                likesCount.textContent = data.likes;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                heartIcon.textContent = wasLiked ? '♥' : '♡';
+                likesCount.textContent = wasLiked
+                    ? parseInt(likesCount.textContent) + 1
+                    : parseInt(likesCount.textContent) - 1;
+            })
+            .finally(() => {
+                button.disabled = false;
+            });
     }
-    // Делаем функцию глобальной, чтобы она была доступна в HTML
-    window.delRequest = delRequest;
-});
 
-// Кнопка изменения задачи task.html
-document.addEventListener('DOMContentLoaded', function () {
-    function editRequest(taskId) {
-        alert("EDIT BUTTON")
-        const url = `/tasks/${taskId}/edit`; //"/tasks/{id}/del"
-
-        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-
-
-        const form = document.createElement('form');
-        form.method = 'GET';
-        form.action = url; // Укажи URL для GET-запроса
-
-        // Создаём скрытое поле для CSRF-токена
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = '_csrf'; // Имя CSRF-токена
-        csrfInput.value = csrfToken; // Значение CSRF-токена
-        form.appendChild(csrfInput);
-
-        document.body.appendChild(form);
-        form.submit();
-    }
-    // Делаем функцию глобальной, чтобы она была доступна в HTML
-    window.editRequest = editRequest;
-});
-
-
-    // Находим все элементы с классом .nav-link
+    // 2. Обработчики для навигационных ссылок
     const navLinks = document.querySelectorAll('.nav-link');
-
-    // Проверяем, найдены ли элементы
-    if (navLinks.length === 0) {
-    console.error('Элементы с классом .nav-link не найдены!');
-} else {
-    console.log('Найдено элементов:', navLinks.length);
-}
-
-    // Добавляем обработчик события для каждого элемента
-    navLinks.forEach(link => {
-    link.addEventListener('click', function () {
-        // Убираем класс "active" у всех элементов
+    if (navLinks.length > 0) {
         navLinks.forEach(link => {
-            link.classList.remove('active');
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                localStorage.setItem('activePath', this.getAttribute('href'));
+                window.location.href = this.getAttribute('href');
+            });
         });
 
-        // Добавляем класс "active" к текущему элементу
-        this.classList.add('active');
-
-        // Сохраняем активную вкладку в localStorage (опционально)
-        localStorage.setItem('activePath', this.getAttribute('href'));
-    });
-});
-
-    // Восстанавливаем активную вкладку при загрузке страницы (опционально)
-    const activePath = localStorage.getItem('activePath');
-    if (activePath) {
-    navLinks.forEach(link => {
-        if (link.getAttribute('href') === activePath) {
-            link.classList.add('active');
+        // Восстановление активной вкладки
+        const activePath = localStorage.getItem('activePath');
+        if (activePath) {
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === activePath) {
+                    link.classList.add('active');
+                }
+            });
         }
-    });
-}
-
-const exitIcon = document.getElementById('exitIcon');
-
-exitIcon.addEventListener('mouseenter', () => {
-    exitIcon.src = '/img/exit-2.png'; // Изменяем изображение при наведении
-});
-
-exitIcon.addEventListener('mouseleave', () => {
-    exitIcon.src = '/img/exit-1.png'; // Возвращаем исходное изображение
-});
-
-//Выпадающий список для страницы tasks
-
-function toggleDropdown() {
-    const dropdownContent = document.getElementById("dropdownContent");
-    if (dropdownContent.style.display === "block") {
-        dropdownContent.style.display = "none"; // Скрываем список
-    } else {
-        dropdownContent.style.display = "block"; // Показываем список
     }
-}
-//Форма добавления задачи - tasks.html
-const openFormButton = document.getElementById('openFormButton');
-const openFormButton2 = document.getElementById('openFormButton');
-const closeFormButton = document.getElementById('closeFormButton');
-const formPopup = document.getElementById('formPopup');
-const overlay = document.createElement('div');
-overlay.classList.add('overlay');
-document.body.appendChild(overlay);
 
-openFormButton.addEventListener('click', () => {
-    formPopup.classList.add('active');
-    overlay.classList.add('active');
+    // 3. Обработчик для иконки выхода
+    const exitIcon = document.getElementById('exitIcon');
+    if (exitIcon) {
+        exitIcon.addEventListener('mouseenter', () => {
+            exitIcon.src = '/img/exit-2.png';
+        });
+        exitIcon.addEventListener('mouseleave', () => {
+            exitIcon.src = '/img/exit-1.png';
+        });
+    }
+
+    // 4. Обработчики для формы
+    const openFormButton = document.getElementById('openFormButton');
+    const closeFormButton = document.getElementById('closeFormButton');
+    const formPopup = document.getElementById('formPopup');
+
+    if (openFormButton && closeFormButton && formPopup) {
+        const overlay = document.createElement('div');
+        overlay.classList.add('overlay');
+        document.body.appendChild(overlay);
+
+        openFormButton.addEventListener('click', () => {
+            formPopup.classList.add('active');
+            overlay.classList.add('active');
+        });
+
+        closeFormButton.addEventListener('click', () => {
+            formPopup.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            formPopup.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+    }
+
+    // 5. Глобальные функции
+    window.logoutRequest = function() {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/logout';
+
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_csrf';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+    window.delRequest = function(taskId) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/tasks/${taskId}/del`;
+
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_csrf';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+    window.editRequest = function(taskId) {
+        window.location.href = `/tasks/${taskId}/edit`;
+    };
+
+    // 6. Выпадающий список
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
+    if (dropdownToggle) {
+        dropdownToggle.addEventListener('click', function() {
+            const dropdownContent = document.getElementById("dropdownContent");
+            if (dropdownContent) {
+                dropdownContent.style.display =
+                    dropdownContent.style.display === "block" ? "none" : "block";
+            }
+        });
+    }
+
+    // Добавляем обработчик для кнопок лайка
+    document.addEventListener('click', handleLikeClick);
 });
-
-openFormButton2.addEventListener('click', () => {
-    formPopup.classList.add('active');
-    overlay.classList.add('active');
-});
-
-closeFormButton.addEventListener('click', () => {
-    formPopup.classList.remove('active');
-    overlay.classList.remove('active');
-});
-
-overlay.addEventListener('click', () => {
-    formPopup.classList.remove('active');
-    overlay.classList.remove('active');
-});
-
-
-

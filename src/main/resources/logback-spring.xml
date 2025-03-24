@@ -20,7 +20,7 @@
     </appender>
 
     <!-- Уровень логирования -->
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
