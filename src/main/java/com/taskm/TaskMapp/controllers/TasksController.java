@@ -30,7 +30,7 @@ import java.util.Set;
 @Controller
 public class TasksController {
 
-    private static String redirect = "redirect:/tasks";
+    private static final String redirect = "redirect:/tasks";
 
     @Autowired
     private TaskRepository taskRepository;
@@ -38,7 +38,7 @@ public class TasksController {
     private UserRepository userRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(TasksController.class);
-    private static Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    private static final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
     @GetMapping("/tasks")
     public String tasks(Model model) {
@@ -84,19 +84,19 @@ public class TasksController {
     }
 
     @GetMapping("/test")
-    public String test(Model model) {
+    public String test() {
 
         return "test";
     }
 
     @PostMapping("/tasks/{id}/del")
-    public String addPostDel(@PathVariable(value = "id") long id, Model model) {
+    public String addPostDel(@PathVariable(value = "id") long id) {
         Task task = taskRepository.findById((int) id).orElseThrow();
         logger.debug("Удаление задачи: {}", task.getName());
         taskRepository.delete(task);
         if (authentication != null && authentication.isAuthenticated()) {
             String username = authentication.getName(); // Имя пользователя
-            logger.info("Пользователь {} удалил задачу: {}, ID: {}", username, task.getName(), task.getId());
+            logger.debug("Пользователь {} удалил задачу: {}, ID: {}", username, task.getName(), task.getId());
         }
 
         return redirect;

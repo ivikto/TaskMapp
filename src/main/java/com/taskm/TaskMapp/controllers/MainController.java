@@ -44,6 +44,7 @@ public class MainController {
         List<Map<String, Object>> formattedTasks = new ArrayList<>();
         for (Task task : tasks) {
             Map<String, Object> taskMap = new HashMap<>();
+            taskMap.put("id", task.getId());
             taskMap.put("title", task.getName());
             taskMap.put("start", task.getDueDate().toString()); // Преобразуем LocalDate в строку
             taskMap.put("description", task.getDescription());
@@ -55,19 +56,18 @@ public class MainController {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule()); // Подключаем модуль для Java 8 date/time
 
-        String tasksJson = null; // Преобразуем задачи в JSON
+        String tasksJson;
         try {
             tasksJson = objectMapper.writeValueAsString(formattedTasks);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(tasksJson); // Выводим JSON в консоль для отладки
         model.addAttribute("tasksJson", tasksJson); // Передаем JSON в модель
         return "calendar";
     }
 
     @GetMapping("/error")
-    public String error(String error, Model model) {
+    public String error() {
 
         return "error";
     }

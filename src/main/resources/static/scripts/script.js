@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     function logoutRequest() {
         const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
 
         const form = document.createElement('form');
         form.method = 'POST';
@@ -25,11 +25,10 @@ document.addEventListener('DOMContentLoaded', function () {
 // Кнопка удаления задачи tasks.html
 document.addEventListener('DOMContentLoaded', function () {
     function delRequest(taskId) {
-        alert("DEL BUTTON")
         const url = `/tasks/${taskId}/del`; //"/tasks/{id}/del"
 
         const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
 
         const form = document.createElement('form');
         form.method = 'POST';
@@ -56,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const url = `/tasks/${taskId}/edit`; //"/tasks/{id}/del"
 
         const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
 
         const form = document.createElement('form');
         form.method = 'GET';
@@ -89,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Добавляем обработчик события для каждого элемента
     navLinks.forEach(link => {
-    link.addEventListener('click', function (e) {
+    link.addEventListener('click', function () {
         // Убираем класс "active" у всех элементов
         navLinks.forEach(link => {
             link.classList.remove('active');
